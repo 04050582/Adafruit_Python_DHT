@@ -19,9 +19,31 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import sys
 
 import Adafruit_DHT
+import time
+import sys
+import httplib, urllib
+import json
+deviceId = "DZbywEsW"
+deviceKey = "SQ0s4ZcbNsNyA98r" 
+def post_to_mcs(payload): 
+	headers = {"Content-type": "application/json", "deviceKey": deviceKey} 
+	not_connected = 1 
+	while (not_connected):
+		try:
+			conn = httplib.HTTPConnection("api.mediatek.com:80")
+			conn.connect() 
+			not_connected = 0 
+		except (httplib.HTTPException, socket.error) as ex: 
+			print "Error: %s"
+			 # sleep 10 seconds 
+	conn.request("POST", "/mcs/v2/devices/" + deviceId + "/datapoints", json.dumps(payload), headers) 
+	response = conn.getresponse() 
+	print( response.status, response.reason, json.dumps(payload), time.strftime("%c")) 
+	data = response.read() 
+	conn.close() 
+
 
 
 # Parse command line parameters.
